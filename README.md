@@ -139,7 +139,8 @@ With that in mind, it was easy to do publish assets according to the hash of the
 on each deployment. The only issue is that you will end up with many assets on S3 that you may not use, but it won't be 
 too hard to write a command that cleans assets that are not being in use on your S3 bucket. 
 
-**Configuration and Usage**
+**Configuration and Usage**  
+
 The configuration is similar to the one when using the *Version Based Asset Pattern* but we must set `assetsVersion` to 
 false: 
 
