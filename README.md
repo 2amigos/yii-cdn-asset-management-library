@@ -165,7 +165,7 @@ false:
     'region' => 'us-east-1',
     'assetsVersion' => false
 ),
-``
+```
 
 Point to Custom Origin Pattern
 ------------------------------
