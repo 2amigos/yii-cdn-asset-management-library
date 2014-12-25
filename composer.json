@@ -1,0 +1,23 @@
+{
+    "name": "2amigos/yii-cdn-asset-manager-library",
+    "description": "CDN Asset Management tools for Yii.",
+    "keywords": ["yii", "extension", "component", "aws", "library"],
+    "type": "yii-extension",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Antonio Ramirez",
+            "email": "ramirez.cobos@gmail.com",
+            "homepage": "http://2amigos.us"
+        }
+    ],
+    "require": {
+        "yiisoft/yii":">=1.1.15",
+        "aws/aws-sdk-php":">=2.6.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "dosamigos\\cdn\\": ""
+        }
+    }
+}
