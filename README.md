@@ -28,7 +28,7 @@ global network with many edge locations. Using these locations. CloudFront accel
 cached copies of the content objects from the nearest location. You can design CDN to be used with Amazon S3 or any 
 other custom origin server.
 
-That ***IS AWESOME***, but all that awesomeness comes a bit hard when your architecture requires more than one server to 
+That ***IS AWESOME***, but that awesomeness is not all that when your architecture requires more than one server to 
 handle your web traffic, and if those instances are created automatically according to that traffic, you will soon face 
 the issue of 404 Not Found exceptions. 
 
@@ -165,7 +165,7 @@ false:
     'region' => 'us-east-1',
     'assetsVersion' => false
 ),
-```
+``
 
 Point to Custom Origin Pattern
 ------------------------------
