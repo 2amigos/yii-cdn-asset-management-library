@@ -193,6 +193,7 @@ class Manager extends CApplicationComponent
     public function getAsset($asset)
     {
         $cache = $this->getFileCache();
+        $asset = realpath($asset);
         return array_key_exists($asset, $cache) ? $cache[$asset]['pub'] : false;
     }
 
@@ -202,8 +203,6 @@ class Manager extends CApplicationComponent
      */
     protected function publishFile($file, $path)
     {
-
-
         $path = realpath($path);
         $cache = $this->getFileCache();
 

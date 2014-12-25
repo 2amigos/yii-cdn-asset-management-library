@@ -26,7 +26,7 @@ class S3Command extends CConsoleCommand
     /**
      * @var string
      */
-    public $manager = 's3Manager';
+    public $manager = 'cdnManager';
 
     /**
      * Publishes assets to S3.
@@ -39,7 +39,7 @@ class S3Command extends CConsoleCommand
 
         Yii::app()->cache->flush();
         $time_start = microtime(true);
-        $useVersionCache = $useVersionCache ? null : false;
+        $useVersionCache = $useVersionCache ? true : false;
         /** @var S3Manager $manager */
         $manager = Yii::app()->getComponent($this->manager);
 
