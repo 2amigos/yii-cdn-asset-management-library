@@ -1,5 +1,5 @@
 {
-    "name": "2amigos/yii-cdn-asset-manager-library",
+    "name": "2amigos/yii-cdn-asset-management-library",
     "description": "CDN Asset Management tools for Yii.",
     "keywords": ["yii", "extension", "component", "aws", "library"],
     "type": "yii-extension",
