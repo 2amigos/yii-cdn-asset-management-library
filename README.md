@@ -165,6 +165,19 @@ false:
     'region' => 'us-east-1',
     'assetsVersion' => false
 ),
+
+// and for the command in section "commandMap"
+
+'commandMap' => array(
+    'S3' => array( // you can alias your command the way you wish
+        // if "vendor" alias is present!
+        'class' => 'dosamigos\cdn\S3Command',
+    ),
+    'migrate' => array(
+        'class' => 'system.cli.commands.MigrateCommand',
+        'migrationPath' => 'application.migrations'
+    )
+)
 ``` 
 
 When we turn off `assetsVersion` the `Manager` instance will publish assets to your S3 bucket based on the changes of 
