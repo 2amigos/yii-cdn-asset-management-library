@@ -39,7 +39,9 @@ class S3Command extends CConsoleCommand
     {
         echo "\nPublishing assets to S3\n";
 
-        Yii::app()->cache->flush(); // should be flash the cache contents?
+        // should be flash the cache contents?
+        // up to you -- un-comment if required
+        // Yii::app()->cache->flush();
         $time_start = microtime(true);
         $useVersionCache = $useVersionCache ? true : false;
         /** @var Manager $manager */
