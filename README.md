@@ -56,7 +56,7 @@ pattern for its simplicity.
 IMPORTANT
 ---------
 Some extensions do work with the `YII_DEBUG` Yii constant in order to force copy the assets, that means for the 
-`S3AssetManager` to publish to S3 Bucket all the time the files. 
+`S3AssetManager` to publish to S3 Bucket all the time the files. So make sure you do have that constant set to `false`.
 
 Also, make sure you have configured a proper `CCache` Component in your application, that is highly important as it tells,
 whether the asset file has been already processed (means published to S3) or not. We have configured `CMemcache`.
