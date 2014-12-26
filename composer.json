@@ -13,7 +13,7 @@
     ],
     "require": {
         "yiisoft/yii":">=1.1.15",
-        "aws/aws-sdk-php":">=2.6.*"
+        "aws/aws-sdk-php":"2.6.*"
     },
     "autoload": {
         "psr-4": {
