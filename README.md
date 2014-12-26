@@ -59,7 +59,8 @@ Some extensions do work with the `YII_DEBUG` Yii constant in order to force copy
 `S3AssetManager` to publish to S3 Bucket all the time the files. So make sure you do have that constant set to `false`.
 
 Also, make sure you have configured a proper `CCache` Component in your application, that is highly important as it tells,
-whether the asset file has been already processed (means published to S3) or not. We have configured `CMemcache`.
+whether the asset file has been already processed (means published to S3) or not. We have configured `CMemcache`, which 
+is perfect for a distributed system like the one we were developing.
 
 Version Based Asset Pattern
 --------------------------- 
@@ -248,6 +249,13 @@ will eventually be consistent but not immediately. In terms of cost, in a given 
 after that you have to pay per file for each file listed in your invalidation requests.
 
 So beware how you use it... 
+
+
+Related Articles
+----------------
+- [Larry Ullman: Using Amazon's CloudFront as a CDN](http://www.larryullman.com/2011/02/20/using-amazons-cloudfront-as-a-cdn/)
+- [Abhishek Tiwari: CDN Design Patterns and best practices](http://abhishek-tiwari.com/post/CloudFront-design-patterns-and-best-practices) 
+- [Amazon's Offical: Using CloudFront with Amazon S3](http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/MigrateS3ToCloudFront.html)
 
  
 > [![2amigOS!](http://www.gravatar.com/avatar/55363394d72945ff7ed312556ec041e0.png)](http://www.2amigos.us)  
