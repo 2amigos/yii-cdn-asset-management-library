@@ -172,6 +172,15 @@ Point to Custom Origin Pattern
 TODO
 
 
+About CDN Invalidation
+----------------------
+In CloudFront cache invalidation is a costly operation with various restrictions. First of all, you can run only 3 
+invalidation requests at any given time. Second, in each validation request you can included maximum of 1000 files. 
+Third, invalidation takes time propagate across all edge locations (5~10 minutes). The change in CloudFront distribution 
+will eventually be consistent but not immediately. In terms of cost, in a given month invalidation of 1000 files is free 
+after that you have to pay per file for each file listed in your invalidation requests.
+
+So beware how you use it... 
 
  
 > [![2amigOS!](http://www.gravatar.com/avatar/55363394d72945ff7ed312556ec041e0.png)](http://www.2amigos.us)  
