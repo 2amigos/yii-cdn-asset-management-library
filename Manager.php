@@ -128,6 +128,10 @@ class Manager extends CApplicationComponent
 
         foreach ($this->assetsPaths as $alias) {
             $path = Yii::getPathOfAlias($alias);
+            if(!file_exists($path)) {
+                $this->consoleEcho("Path not found: {$path}\n", "0;31");
+                continue;
+            }
             if ($useVersionCache) {
                 $files = new RecursiveIteratorIterator(
                     new RecursiveDirectoryIterator($path),
