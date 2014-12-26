@@ -53,6 +53,14 @@ What we did is finally a mix of all the things proposed by those great extension
 Due that on each deployment to production a new folder was created based on its timestamp, we used the last mentioned 
 pattern for its simplicity. 
 
+IMPORTANT
+---------
+Some extensions do work with the `YII_DEBUG` Yii constant in order to force copy the assets, that means for the 
+`S3AssetManager` to publish to S3 Bucket all the time the files. 
+
+Also, make sure you have configured a proper `CCache` Component in your application, that is highly important as it tells,
+whether the asset file has been already processed (means published to S3) or not. We have configured `CMemcache`.
+
 Version Based Asset Pattern
 --------------------------- 
 This technique requires a file that keeps cached information about changes on the files under specified folders. When 
