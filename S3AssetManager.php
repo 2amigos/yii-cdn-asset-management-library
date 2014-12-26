@@ -211,6 +211,24 @@ class S3AssetManager extends CAssetManager
     }
 
     /**
+     * @return string the CDN Uri
+     */
+    public function getBaseUrl()
+    {
+        if($this->isDeveloperEnvironment) {
+            // will call \CAssetManager::getBaseUrl
+            return parent::getBaseUrl();
+        }
+
+        if ($this->_baseUrl === null) {
+            $schema = Yii::app()->getRequest()->isSecureConnection ? 'https' : 'http';
+            $baseUrl = "{$schema}://{$this->host}/";
+            $this->_baseUrl = $baseUrl;
+        }
+        return $this->_baseUrl;
+    }
+
+    /**
      * Will publish the asset to the bucket
      *
      * @param string $key the AWS API key

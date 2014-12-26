@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (c) 2013 2amigOS! Consulting Group LLC
+ * @copyright Copyright (c) 2015 2amigOS! Consulting Group LLC
  * @link http://2amigos.us
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -47,7 +47,7 @@ class Manager extends CApplicationComponent
      */
     public $assetManagerComponentId;
     /**
-     * @var S3AssetManager instance that handles publishing to S3.
+     * @var S3AssetManager|CdnAssetManager instance that handles publishing to S3.
      */
     protected $assetManager;
     /**
@@ -123,7 +123,7 @@ class Manager extends CApplicationComponent
     public function publishAssets($useVersionCache = false)
     {
         if (!($this->assetManager instanceof S3AssetManager)) {
-            throw new CException('"assetManager" must be an instance of CdnAssetManager');
+            throw new CException('"assetManager" must be an instance of S3AssetManager');
         }
 
         foreach ($this->assetsPaths as $alias) {
@@ -154,6 +154,20 @@ class Manager extends CApplicationComponent
             }
 
         }
+    }
+
+    /**
+     * Invalidates assets on CDN
+     *
+     * @throws CException
+     */
+    public function invalidateAssets()
+    {
+        if(!($this->assetManager instanceof CdnAssetManager)) {
+            throw new CException('"assetManager" must be an instance of CdnAssetManager');
+        }
+
+        $this->assetManager->invalidateAssetsOnCloudFront($this->assetsPaths);
     }
 
     /**

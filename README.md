@@ -135,9 +135,9 @@ in our case, the latest production full path was changing according to the times
 /var/full/path/to/application/20141223113901/
 ```
 
-With that in mind, it was easy to do publish assets according to the hash of their realpath as their path was changing 
-on each deployment. The only issue is that you will end up with many assets on S3 that you may not use, but it won't be 
-too hard to write a command that cleans assets that are not being in use on your S3 bucket. 
+With that in mind, it was easy to publish assets according to the hash created based on the assets full path as that was 
+changing on each deployment. The only issue is that you will end up with many assets on S3 that you may not use, but it 
+won't be too hard to write a command that cleans assets that are not being in use on your S3 bucket. 
 
 **Configuration and Usage**  
 
@@ -165,12 +165,58 @@ false:
     'region' => 'us-east-1',
     'assetsVersion' => false
 ),
-``
+``` 
+
+When we turn off `assetsVersion` the `Manager` instance will publish assets to your S3 bucket based on the changes of 
+the path name to your assets. That means, that the following command should be used post-deploy on your production 
+server:
+  
+``` 
+./yiic S3 --manager=cdnManager publish
+```
+
 
 Point to Custom Origin Pattern
 ------------------------------
-TODO
+On this case, instead of using an S3 instance, what you do is to point CDN to one of your web instances and make sure 
+that the contents your assets folder are also published on each deployment, that is, if you use git then add them to 
+the repository so you can keep track of the changes. 
 
+The `CdnAssetManager` what it does is to tell CDN to serve the asset from the pointed web instance. Now, if you do have 
+continuous full path changes (as described above) is all fine, but if not, you will be forced to use the invalidation 
+command and that comes with a price. On a distributed system, it won't work as expected, as it could lead to broken app 
+till the CDN updates (5~10 minutes).
+
+
+**Configuration and Usage**  
+
+The only thing required for this is to configure the asset manager, 
+
+
+```php 
+'cdnManager' => array( // make sure you set this name to the one that you are going to use wit S3Command
+    'class' => 'dosamigos\cdn\Manager',
+    'remoteAssetManagerComponent' => 'assetManager',
+    'assetsPaths' => array( // the 'static' assets you wish to invalidate. They must be "aliases"
+        'webroot.assets',
+        'common.extensions.widgets.assets',
+        'vendor.yiisoft.yii.framework.zii.widgets.assets', // you can also manage vendor 'dynamic' assets
+        'vendor.yiisoft.yii.framework.web.js.source',
+    )
+),
+'assetManager' => array(
+    'class' => 'dosamigos\cdn\CdnAssetManager',
+    'key' => '{YOUR_AWS_API_KEY}', // if you wish to use invalidation
+    'secret' => '{YOUR_AWS_API_SECRET}', // if you wish to use invalidation
+    'host' => '{YOUR_CLOUDFRONT_ID}.cloudfront.net',
+),
+``` 
+
+The command to invalidate your assets is: 
+
+``` 
+./yiic S3 --manager=cdnManager invalidate
+```
 
 About CDN Invalidation
 ----------------------

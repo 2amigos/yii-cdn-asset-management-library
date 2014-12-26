@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (c) 2013 2amigOS! Consulting Group LLC
+ * @copyright Copyright (c) 2015 2amigOS! Consulting Group LLC
  * @link http://2amigos.us
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
@@ -31,16 +31,18 @@ class S3Command extends CConsoleCommand
     /**
      * Publishes assets to S3.
      *
-     * @param bool $useVersionCache
+     * @param bool $useVersionCache whether to use version based asset pattern or not
+     *
+     * @throws \CException
      */
     public function actionPublish($useVersionCache = false)
     {
         echo "\nPublishing assets to S3\n";
 
-        Yii::app()->cache->flush();
+        Yii::app()->cache->flush(); // should be flash the cache contents?
         $time_start = microtime(true);
         $useVersionCache = $useVersionCache ? true : false;
-        /** @var S3Manager $manager */
+        /** @var Manager $manager */
         $manager = Yii::app()->getComponent($this->manager);
 
         $manager->publishAssets($useVersionCache);
@@ -49,5 +51,19 @@ class S3Command extends CConsoleCommand
         $time = $time_end - $time_start;
 
         echo "\nDone in $time seconds\n";
+    }
+
+    /**
+     * Invalidates assets on CDN
+     *
+     * @throws \CException
+     */
+    public function actionInvalidate() {
+        echo "\nInvalidating assets on CloudFront\n";
+
+        /** @var Manager $manager */
+        $manager = Yii::app()->getComponent($this->manager);
+        $manager->invalidateAssets();
+        echo "\nDone invalidation process\n";
     }
 }

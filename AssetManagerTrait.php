@@ -6,8 +6,6 @@
  */
 namespace dosamigos\cdn;
 
-use Yii;
-
 /**
  * AssetManagerTrait
  *
@@ -42,21 +40,4 @@ trait AssetManagerTrait
      */
     private $_baseUrl;
 
-    /**
-     * @return string the CDN Uri
-     */
-    public function getBaseUrl()
-    {
-        if($this->isDeveloperEnvironment) {
-            // will call \CAssetManager::getBaseUrl
-            return parent::getBaseUrl();
-        }
-
-        if ($this->_baseUrl === null) {
-            $schema = Yii::app()->getRequest()->isSecureConnection ? 'https' : 'http';
-            $baseUrl = "{$schema}://{$this->host}/";
-            $this->_baseUrl = $baseUrl;
-        }
-        return $this->_baseUrl;
-    }
 }

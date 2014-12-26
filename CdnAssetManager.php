@@ -67,6 +67,22 @@ class CdnAssetManager extends CAssetManager
     }
 
     /**
+     * @inheritdoc
+     */
+    public function publish($path, $hashByName = false, $level = -1, $forceCopy = null)
+    {
+        $path = parent::publish($path, $hashByName, $level, $forceCopy);
+
+        if (!$this->isDeveloperEnvironment) {
+
+            $schema = Yii::app()->getRequest()->isSecureConnection ? 'https' : 'http';
+            $path = "{$schema}://{$this->host}{$path}";
+        }
+        return $path;
+    }
+
+
+    /**
      * Invalidates specified asset files from CDN.
      *
      * Important: In CloudFront cache invalidation is a costly operation with various restrictions. First of all, you
