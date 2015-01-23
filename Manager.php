@@ -128,23 +128,20 @@ class Manager extends CApplicationComponent
 
         foreach ($this->assetsPaths as $alias) {
             $path = Yii::getPathOfAlias($alias);
-            if(!file_exists($path)) {
+            if (!file_exists($path)) {
                 $this->consoleEcho("Path not found from alias: {$alias}\n", "0;31");
                 continue;
             }
             if ($useVersionCache) {
-                $files = new RecursiveIteratorIterator(
-                    new RecursiveDirectoryIterator($path),
-                    RecursiveIteratorIterator::SELF_FIRST
-                );
-                foreach ($files as $file) {
-                    if ($this->isFileIgnored($file)) {
-                        $this->consoleEcho("Ignored ", "0;31");
-                        $this->consoleEcho($file->getFileName() . "\r\n");
-                        continue;
-                    }
-
-                    $this->publishFile($file, $path);
+                if ($this->isFileIgnored($path)) {
+                    $this->consoleEcho("Ignored ", "0;31");
+                    $this->consoleEcho($path . "\r\n");
+                    continue;
+                } elseif (is_dir($path)) {
+                    $this->publishDir($path);
+                } elseif (is_file($path)) {
+                    $file = new \SplFileInfo($path);
+                    $this->publishFile($file);
                 }
             } else {
                 $this->consoleEcho("Publishing directory without cache {$path}\n", "0;32");
@@ -167,7 +164,7 @@ class Manager extends CApplicationComponent
      */
     public function invalidateAssets()
     {
-        if(!($this->assetManager instanceof CdnAssetManager)) {
+        if (!($this->assetManager instanceof CdnAssetManager)) {
             throw new CException('"assetManager" must be an instance of CdnAssetManager');
         }
 
@@ -211,36 +208,97 @@ class Manager extends CApplicationComponent
     public function getAsset($asset)
     {
         $cache = $this->getFileCache();
-        $asset = realpath($asset);
-        return array_key_exists($asset, $cache) ? $cache[$asset]['pub'] : false;
+        $id = $this->hash($asset);
+
+        return array_key_exists($id, $cache) ? $cache[$id]['pub'] : false;
     }
 
     /**
-     * @param \SplFileInfo $file
-     * @param string $path
+     * Returns the hash of a path of a directory or the contents of a file
+     *
+     * @param $path
+     *
+     * @return string
      */
-    protected function publishFile($file, $path)
+    protected function hash($path) {
+        return is_dir($path)
+            ? sprintf('%x', crc32($path . Yii::getVersion()))
+            : sha1_file($path); // hash the contents of the file
+    }
+
+    /**
+     * Publishes a directory
+     *
+     * @param string $path the directory to publish
+     */
+    protected function publishDir($path)
     {
         $path = realpath($path);
         $cache = $this->getFileCache();
+        $id = $this->hash($path);
 
-        $relative = str_replace($path, "", $file->getPathname());
+        if (!array_key_exists($id, $cache)) {
+            $dirCache = array(
+                'mtime' => 0,
+                'ver' => $this->startVersion,
+                'run' => 0
+            );
+        } else {
+            $dirCache = $cache[$id];
+        }
+        $mtime = filemtime($path);
 
-        if (!array_key_exists($relative, $cache)) {
+        if($dirCache['mtime'] != $mtime) {
+            $this->consoleEcho("Updating ", "0;32");
+            $this->consoleEcho($path . " \r\n", true);
+            $dirCache['mtime'] = $mtime;
+            $dirCache['ver'] = $dirCache['ver'] + 1;
+            $dirCache['pub'] = $this->assetManager->publish(
+                $path,
+                false,
+                -1,
+                true,
+                $dirCache['ver']
+            );
+
+            $dirCache['run'] = $this->timeStamp;
+            $cache[$id] = $dirCache;
+
+            $this->setFileCache($cache);
+        } else {
+            $this->consoleEcho("No Change ", "0;33");
+            $this->consoleEcho($dirCache->getFileName() . "\r\n");
+        }
+    }
+
+    /**
+     * Publishes a file
+     *
+     * @param \SplFileInfo $file
+     */
+    protected function publishFile($file)
+    {
+        $cache = $this->getFileCache();
+
+        $id = $this->hash($file->getRealPath());
+
+        if (!array_key_exists($id, $cache)) {
             $fileCache = array(
                 'sha' => 'cdnManager',
                 'ver' => $this->startVersion,
                 'run' => 0
             );
         } else {
-            $fileCache = $cache[$relative];
+            $fileCache = $cache[$id];
         }
 
-        if ($fileCache['sha'] !== sha1_file($file->getPathname())) {
+        $crc = sha1_file($file->getRealPath());
+
+        if ($fileCache['sha'] !== $crc) {
             $this->consoleEcho("Updating ", "0;32");
             $this->consoleEcho($file->getFileName() . " \r\n", true);
             $fileCache['ver'] = $fileCache['ver'] + 1;
-            $fileCache['sha'] = sha1_file($file->getPathname());
+            $fileCache['sha'] = $crc;
 
             $fileCache['pub'] = $this->assetManager->publish(
                 $file->getRealPath(),
@@ -250,15 +308,15 @@ class Manager extends CApplicationComponent
                 $fileCache['ver']
             );
 
+            $fileCache['run'] = $this->timeStamp;
+            $cache[$id] = $fileCache;
+
+            $this->setFileCache($cache);
+
         } else {
             $this->consoleEcho("No Change ", "0;33");
             $this->consoleEcho($file->getFileName() . "\r\n");
         }
-
-        $fileCache['run'] = $this->timeStamp;
-        $cache[$relative] = $fileCache;
-
-        $this->setFileCache($cache);
 
     }
 
