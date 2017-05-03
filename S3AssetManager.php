@@ -4,7 +4,7 @@
  * @link http://2amigos.us
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
-namespace dosamigos\cdn;
+namespace koma136\cdn;
 
 use CAssetManager;
 use CException;
@@ -295,7 +295,8 @@ class S3AssetManager extends CAssetManager
                 [
                     'key' => $this->key,
                     'secret' => $this->secret,
-                    'region' => $this->region
+                    'region' => $this->region,
+                    'signature' => 'v4'
                 ]
             );
         }

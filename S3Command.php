@@ -4,7 +4,7 @@
  * @link http://2amigos.us
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
-namespace dosamigos\cdn;
+namespace koma136\cdn;
 
 use Yii;
 use CConsoleCommand;
@@ -18,7 +18,7 @@ use CConsoleCommand;
  * @author Antonio Ramirez <amigo.cobos@gmail.com>
  * @link http://www.ramirezcobos.com/
  * @link http://www.2amigos.us/
- * @package dosamigos\cdn
+ * @package koma136\cdn
  */
 class S3Command extends CConsoleCommand
 {
