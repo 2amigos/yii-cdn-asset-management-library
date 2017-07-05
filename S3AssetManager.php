@@ -291,13 +291,14 @@ class S3AssetManager extends CAssetManager
     protected function getS3()
     {
         if ($this->s3 === null) {
-            $this->s3 = S3Client::factory(
-                [
+            $this->s3 = new S3Client([
+                'version' => '2006-03-01',
+                'region' => $this->region,
+                'credentials' => [
                     'key' => $this->key,
                     'secret' => $this->secret,
-                    'region' => $this->region
-                ]
-            );
+                ],
+            ]);
         }
         return $this->s3;
     }
