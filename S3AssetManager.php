@@ -153,16 +153,10 @@ class S3AssetManager extends CAssetManager
                     : $this->path . "/" . $directory;
 
                 $destFile = $directory . "/" . $filename;
-                $cache = $this->getCache();
-                $cacheKey = $this->getCacheKey($src, $assetsVersion);
 
-                if ($forceCopy || $cache->get($cacheKey) === false) {
+                if ($forceCopy || (@filemtime($destFile) < @filemtime($src))) {
 
                     if ($this->publishToBucket($destFile, $src, $contentType)) {
-                        // flag cache that a file has been uploaded
-                        // we may work with versioning... if a library has been updated, make sure you update the version
-                        // of the assets file!
-                        $cache->set($cacheKey, true, 0);
                         Yii::trace("{$src} sent to S3");
                     } else {
                         throw new CException("Unable to sent asset to S3!");
@@ -177,31 +171,30 @@ class S3AssetManager extends CAssetManager
                 $directory = $this->assetsVersion !== false
                     ? $this->path . "/" . $assetsVersion . "/" . $directory // version based assets
                     : $this->path . "/" . $directory;
-                $cache = $this->getCache();
-                $cacheKey = $this->getCacheKey($src, $assetsVersion);
 
-                if ($forceCopy || $cache->get($cacheKey) === false) {
-                    $files = CFileHelper::findFiles(
-                        $src,
-                        [
-                            'exclude' => $this->excludeFiles,
-                            'level' => $level
-                        ]
-                    );
-                    foreach ($files as $file) {
-                        $file = realpath($file);
-                        $destFile = $directory . "/" . str_replace($src . "/", "", $file);
-                        $contentType = CFileHelper::getMimeTypeByExtension($destFile);
+                $files = CFileHelper::findFiles(
+                    $src,
+                    [
+                        'exclude' => $this->excludeFiles,
+                        'level' => $level
+                    ]
+                );
+                foreach ($files as $file) {
+                    $file = realpath($file);
+                    $destFile = $directory . "/" . str_replace($src . "/", "", $file);
+                    $contentType = CFileHelper::getMimeTypeByExtension($destFile);
+
+                    if ($forceCopy || (@filemtime($destFile) < @filemtime($file))) {
                         if ($this->publishToBucket($destFile, $file, $contentType)) {
                             Yii::trace("Sent $destFile to S3");
                         } else {
                             throw new CException("Unable to send assets to S3!");
                         }
+                    } else {
+                        Yii::trace("Returning {$file} from cache.");
                     }
-                    $cache->set($cacheKey, true, 0);
-                } else {
-                    Yii::trace("Returning {$src} from cache");
                 }
+
                 return $this->_published[$src] = $this->getBaseUrl() . $directory;
             }
         }
